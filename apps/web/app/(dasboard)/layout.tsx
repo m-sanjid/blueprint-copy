@@ -1,6 +1,4 @@
 import AppSidebar from '@/components/core/app-sidebar'
-import { Container } from '@/components/core/container'
-import { Header } from '@/components/core/header'
 import { SidebarInset, SidebarProvider } from '@workspace/ui/components/sidebar'
 import React from 'react'
 

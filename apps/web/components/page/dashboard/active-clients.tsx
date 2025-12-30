@@ -51,16 +51,24 @@ function getInitials(name: string): string {
 }
 
 // Skeleton State
-export function ActiveClientsSkeleton({ className }: { className?: string }) {
+export function ActiveClientsSkeleton({
+  title = "Active Clients",
+  subtitle = "CUPO profiles with opportunities",
+  className
+}: {
+  title?: string
+  subtitle?: string
+  className?: string
+}) {
   return (
     <Card className={cn("border-border/50", className)}>
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
-            <Skeleton className="h-6 w-32 mb-2" />
-            <Skeleton className="h-4 w-48" />
+            <CardTitle>{title}</CardTitle>
+            <CardDescription>{subtitle}</CardDescription>
           </div>
-          <Skeleton className="h-9 w-32" />
+          <Skeleton className="h-8 w-32" />
         </div>
       </CardHeader>
       <CardContent>
@@ -72,8 +80,11 @@ export function ActiveClientsSkeleton({ className }: { className?: string }) {
                 <Skeleton className="h-4 w-40 mb-1" />
                 <Skeleton className="h-3 w-32" />
               </div>
-              <Skeleton className="h-4 w-20" />
-              <Skeleton className="h-6 w-16" />
+              <div className="flex items-center gap-1">
+                <Skeleton className="h-3 w-3" />
+                <Skeleton className="h-4 w-14" />
+              </div>
+              <Skeleton className="h-5 w-16 rounded-full" />
             </div>
           ))}
         </div>
@@ -114,7 +125,7 @@ export function ActiveClients({
 }: ActiveClientsProps) {
   const clients = data ?? legacyClients ?? []
 
-  if (state === 'loading') return <ActiveClientsSkeleton className={className} />
+  if (state === 'loading') return <ActiveClientsSkeleton title={title} subtitle={subtitle} className={className} />
   if (state === 'empty' || clients.length === 0) return <ActiveClientsEmpty title={title} className={className} />
 
   return (

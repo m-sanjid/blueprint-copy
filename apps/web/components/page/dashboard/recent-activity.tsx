@@ -34,18 +34,26 @@ const activityIcons = {
 }
 
 // Skeleton State
-export function RecentActivitySkeleton({ className }: { className?: string }) {
+export function RecentActivitySkeleton({
+  title = "Recent Activity",
+  subtitle = "Platform events and notifications",
+  className
+}: {
+  title?: string
+  subtitle?: string
+  className?: string
+}) {
   return (
     <Card className={cn("border-border/50", className)}>
       <CardHeader>
-        <Skeleton className="h-6 w-32 mb-2" />
-        <Skeleton className="h-4 w-48" />
+        <CardTitle>{title}</CardTitle>
+        <CardDescription>{subtitle}</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
+        <div className="space-y-3">
           {Array.from({ length: 5 }).map((_, i) => (
             <div key={i} className="flex items-start gap-3">
-              <Skeleton className="h-9 w-9 rounded-lg flex-shrink-0" />
+              <Skeleton className="h-8 w-8 rounded-lg flex-shrink-0" />
               <div className="flex-1">
                 <Skeleton className="h-4 w-40 mb-1" />
                 <Skeleton className="h-3 w-56" />
@@ -88,7 +96,7 @@ export function RecentActivity({
 }: RecentActivityProps) {
   const activities = data ?? legacyActivities ?? []
 
-  if (state === 'loading') return <RecentActivitySkeleton className={className} />
+  if (state === 'loading') return <RecentActivitySkeleton title={title} subtitle={subtitle} className={className} />
   if (state === 'empty' || activities.length === 0) return <RecentActivityEmpty title={title} className={className} />
 
   return (
@@ -98,7 +106,7 @@ export function RecentActivity({
         <CardDescription>{subtitle}</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
+        <div className="space-y-3">
           {activities.map((activity) => {
             const config = activityIcons[activity.type]
             const IconComponent = config.icon

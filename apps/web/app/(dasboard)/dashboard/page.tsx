@@ -160,10 +160,10 @@ export default function Dashboard() {
         subtitle="Blueprint Core Platform Overview"
         primaryAction={{ label: 'New Client', onClick: addClientDialog.openDialog, icon: <IconPlus className="h-4 w-4 mr-2" /> }}
       />
-      <Container className='py-8 space-y-8'>
+      <Container className='py-8 space-y-3'>
 
         {/* Stat Cards */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
           <StatCard
             state={state}
             title="Active Clients"

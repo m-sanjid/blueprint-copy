@@ -2,6 +2,7 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@workspace/ui/components/avatar"
 import { Separator } from "@workspace/ui/components/separator"
+import { Skeleton } from "@workspace/ui/components/skeleton"
 import {
   SidebarFooter,
   SidebarMenu,
@@ -17,30 +18,146 @@ import { LogOut, Settings, User } from "lucide-react"
 import Link from "next/link"
 import { cn } from "@workspace/ui/lib/utils"
 
-export interface SidebarUserNavProps {
-  data: {
-    user: {
-      name: string
-      avatar: string
-      plan: string
-      pdfsUsed: number
-      pdfsTotal: number
-    }
-  }
+// ============================================================================
+// Types
+// ============================================================================
+export type UserNavState = 'loading' | 'data' | 'empty'
+
+export interface UserData {
+  name: string
+  avatar: string
+  plan: string
+  pdfsUsed: number
+  pdfsTotal: number
 }
 
-export const SidebarUserNav = ({ data }: SidebarUserNavProps) => {
-  const { state, isMobile } = useSidebar()
-  const user = data.user
-  if (!user) return null
+export interface SidebarUserNavProps {
+  data?: {
+    user: UserData
+  }
+  state?: UserNavState
+}
 
-  const isCollapsed = state === "collapsed" && !isMobile
-
-  const percent = Math.min(
-    100,
-    Math.round((user.pdfsUsed / user.pdfsTotal) * 100)
+// ============================================================================
+// Skeleton State
+// ============================================================================
+function SidebarUserNavSkeleton() {
+  return (
+    <SidebarFooter className="p-2">
+      <SidebarMenu>
+        <SidebarMenuItem className="rounded-xl bg-neutral-50 dark:bg-neutral-50/5 backdrop-blur-xl p-2 space-y-2">
+          <div className="bg-white dark:bg-neutral-950 rounded-lg py-2 border">
+            <div className="flex items-center gap-3 px-2 py-1.5">
+              <Skeleton className="h-9 w-9 rounded-xl" />
+              <div className="min-w-0 flex-1">
+                <Skeleton className="h-4 w-24 mb-1" />
+                <Skeleton className="h-3 w-16" />
+              </div>
+            </div>
+            <div className="px-2">
+              <Skeleton className="h-1.5 w-full rounded-full" />
+              <Skeleton className="h-3 w-20 mt-1" />
+            </div>
+          </div>
+          <Separator />
+          <div className="flex gap-2 items-center justify-end">
+            <NavItem href="/account" icon={User} tooltip="Account" />
+            <NavItem href="/settings" icon={Settings} tooltip="Settings" />
+            <NavItem
+              href="/logout"
+              icon={LogOut}
+              className="text-destructive hover:bg-destructive/10"
+              tooltip="Log out"
+            />
+          </div>
+        </SidebarMenuItem>
+      </SidebarMenu>
+    </SidebarFooter>
   )
+}
 
+// ============================================================================
+// Empty State
+// ============================================================================
+function SidebarUserNavEmpty() {
+  return (
+    <SidebarFooter className="p-2">
+      <SidebarMenu>
+        <SidebarMenuItem className="rounded-xl bg-neutral-50 dark:bg-neutral-50/5 backdrop-blur-xl p-2">
+          <div className="bg-white dark:bg-neutral-950 rounded-lg py-3 border text-center">
+            <User className="h-6 w-6 mx-auto text-muted-foreground mb-1" />
+            <p className="text-xs text-muted-foreground">Not signed in</p>
+            <Link
+              href="/login"
+              className="text-xs text-primary hover:underline mt-1 inline-block"
+            >
+              Sign in
+            </Link>
+          </div>
+        </SidebarMenuItem>
+      </SidebarMenu>
+    </SidebarFooter>
+  )
+}
+
+// ============================================================================
+// Collapsed Skeleton
+// ============================================================================
+function CollapsedSkeleton() {
+  return (
+    <SidebarFooter className="p-2">
+      <SidebarMenu>
+        <SidebarMenuItem className="flex flex-col items-center gap-1">
+          <div className="p-1">
+            <Skeleton className="h-8 w-8 rounded-lg" />
+          </div>
+        </SidebarMenuItem>
+      </SidebarMenu>
+    </SidebarFooter>
+  )
+}
+
+// ============================================================================
+// Main Component
+// ============================================================================
+export const SidebarUserNav = ({ data, state = 'data' }: SidebarUserNavProps) => {
+  const { state: sidebarState, isMobile } = useSidebar()
+  const isCollapsed = sidebarState === "collapsed" && !isMobile
+
+  // Loading State
+  if (state === 'loading') {
+    return isCollapsed ? <CollapsedSkeleton /> : <SidebarUserNavSkeleton />
+  }
+
+  // Empty State or no user
+  if (state === 'empty' || !data?.user) {
+    if (isCollapsed) {
+      return (
+        <SidebarFooter className="p-2">
+          <SidebarMenu>
+            <SidebarMenuItem className="flex flex-col items-center gap-1">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link href="/login" className="p-1">
+                    <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center">
+                      <User className="h-4 w-4 text-muted-foreground" />
+                    </div>
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent side="right" align="center">
+                  <p className="font-medium">Sign in</p>
+                </TooltipContent>
+              </Tooltip>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarFooter>
+      )
+    }
+    return <SidebarUserNavEmpty />
+  }
+
+  const user = data.user
+  const percent = Math.min(100, Math.round((user.pdfsUsed / user.pdfsTotal) * 100))
   const initials = user.name
     .split(" ")
     .map(n => n[0])
@@ -76,13 +193,13 @@ export const SidebarUserNav = ({ data }: SidebarUserNavProps) => {
     )
   }
 
-  // Expanded view - full user nav always visible
+  // Expanded view - full user nav
   return (
     <SidebarFooter className="p-2">
       <SidebarMenu>
         <SidebarMenuItem className="rounded-xl bg-neutral-50 dark:bg-neutral-50/5 backdrop-blur-xl p-2 space-y-2">
           {/* User */}
-          <div className="bg-white dark:bg-neutral-950 rounded-lg">
+          <div className="bg-white dark:bg-neutral-950 rounded-lg py-2 border">
             <div className="flex items-center gap-3 px-2 py-1.5">
               <Avatar className="h-9 w-9 rounded-xl">
                 <AvatarImage src={user.avatar} />
@@ -114,51 +231,52 @@ export const SidebarUserNav = ({ data }: SidebarUserNavProps) => {
           <Separator />
 
           {/* Primary actions */}
-          <NavItem href="/account" icon={User}>
-            Account
-          </NavItem>
-
-          <NavItem href="/settings" icon={Settings}>
-            Settings
-          </NavItem>
-
-          <Separator />
-
-          {/* Logout */}
-          <NavItem
-            href="/logout"
-            icon={LogOut}
-            className="text-destructive hover:bg-destructive/10"
-          >
-            Log out
-          </NavItem>
+          <div className="flex gap-2 items-center justify-end">
+            <NavItem href="/account" icon={User} tooltip="Account" />
+            <NavItem href="/settings" icon={Settings} tooltip="Settings" />
+            <NavItem
+              href="/logout"
+              icon={LogOut}
+              className="text-destructive hover:bg-destructive/10"
+              tooltip="Log out"
+            />
+          </div>
         </SidebarMenuItem>
       </SidebarMenu>
     </SidebarFooter>
   )
 }
 
+// ============================================================================
+// NavItem Helper
+// ============================================================================
 function NavItem({
   href,
   icon: Icon,
-  children,
+  tooltip,
   className,
 }: {
   href: string
   icon: React.ElementType
-  children: React.ReactNode
+  tooltip: string
   className?: string
 }) {
   return (
-    <Link
-      href={href}
-      className={cn(
-        "flex items-center gap-3 rounded-lg px-2 py-2 text-sm font-medium text-muted-foreground transition hover:bg-muted hover:text-foreground",
-        className
-      )}
-    >
-      <Icon className="h-4 w-4" />
-      {children}
-    </Link>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Link
+          href={href}
+          className={cn(
+            "flex items-center justify-center border p-1 rounded-md w-fit",
+            className
+          )}
+        >
+          <Icon className="h-4 w-4" />
+        </Link>
+      </TooltipTrigger>
+      <TooltipContent className="border">
+        <p className="font-medium">{tooltip}</p>
+      </TooltipContent>
+    </Tooltip>
   )
 }

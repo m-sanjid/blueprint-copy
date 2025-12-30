@@ -73,7 +73,7 @@ export function AddClientDialog({ open, onOpenChange, onSubmit }: AddClientDialo
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-3">
           <div className="space-y-2">
             <Label htmlFor="client-name">Client Name</Label>
             <Input

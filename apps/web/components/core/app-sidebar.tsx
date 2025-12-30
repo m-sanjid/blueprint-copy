@@ -5,7 +5,6 @@ import {
   Sidebar,
   SidebarContent,
   SidebarRail,
-  SidebarTrigger,
   useSidebar,
 } from "@workspace/ui/components/sidebar"
 
@@ -15,9 +14,8 @@ import {
   type NavItem,
   SidebarUserNav,
 } from "./sidebar"
-import { IconBrain, IconCalculator, IconFileText, IconHeartbeat, IconHeartRateMonitor, IconLayoutDashboard, IconLock, IconMap, IconSettings, IconUsers } from "@tabler/icons-react"
+import { IconBrain, IconCalculator, IconFileText, IconHeartRateMonitor, IconLayoutDashboard, IconLock, IconMap, IconSettings, IconUsers } from "@tabler/icons-react"
 import { CompanyLogo } from "./logo"
-import { cn } from "@workspace/ui/lib/utils"
 
 // Main navigation items matching the reference design
 const navItems: NavItem[] = [
@@ -75,9 +73,18 @@ const navItems: NavItem[] = [
 
 const AppSidebar = () => {
   const { open } = useSidebar()
+  const [userState, setUserState] = React.useState<'loading' | 'data'>('loading')
+
+  // Simulate loading on mount (replace with actual API call)
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      setUserState('data')
+    }, 800)
+    return () => clearTimeout(timer)
+  }, [])
+
   return (
     <Sidebar collapsible="icon" className="relative">
-      <SidebarTrigger className={cn("absolute top-4 right-8 z-50", !open && "hidden")} />
       <SidebarHeader
         company={{
           name: "Blueprint",
@@ -88,7 +95,10 @@ const AppSidebar = () => {
         <SidebarNav items={navItems} />
       </SidebarContent>
       <SidebarRail />
-      <SidebarUserNav data={{ user: { name: "John Doe", avatar: "https://via.placeholder.com/150", plan: "Bronze", pdfsUsed: 62, pdfsTotal: 100 } }} />
+      <SidebarUserNav
+        state={userState}
+        data={{ user: { name: "John Doe", avatar: "https://via.placeholder.com/150", plan: "Bronze", pdfsUsed: 62, pdfsTotal: 100 } }}
+      />
     </Sidebar>
   )
 }

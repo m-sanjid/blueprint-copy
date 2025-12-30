@@ -39,13 +39,12 @@ export function PageHeader({
   return (
     <div className='border-b sticky top-0 z-10 bg-background'>
       <Container className={cn("flex items-center justify-between py-4", className)}>
-        {!open && <SidebarTrigger className='absolute left-4 top-4 z-50' />}
-        <div className="space-y-1.5">
+        {/* <div className="flex items-center gap-1"> */}
+        {!open && <SidebarTrigger className='absolute left-2' />}
+        <div className="space-y-1.5 ml-2">
           <h1 className="text-2xl font-bold">{title}</h1>
-          {subtitle && (
-            <p className="text-sm text-muted-foreground">{subtitle}</p>
-          )}
         </div>
+        {/* </div> */}
         <div className="flex items-center gap-3">
           {showSearch && (
             <InputGroup>
@@ -61,7 +60,7 @@ export function PageHeader({
             </InputGroup>
           )}
           <Button variant="ghost" size="icon" className="relative">
-            <IconBell className="h-4 w-4" />
+            <IconBell className="size-6" />
             <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-red-500" />
           </Button>
           {primaryAction && (

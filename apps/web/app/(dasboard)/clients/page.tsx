@@ -138,7 +138,7 @@ export default function Clients() {
         subtitle="CUPO profiles and client management"
         primaryAction={{ label: 'New Client', onClick: addClientDialog.openDialog, icon: <IconPlus className="h-4 w-4 mr-2" /> }}
       />
-      <Container className="space-y-8 py-8">
+      <Container className="space-y-3 py-8">
 
         {/* Stats */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -216,7 +216,7 @@ export default function Clients() {
           <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 6 }).map((_, i) => (
               <Card key={i} className="border-border/30 bg-card/50">
-                <CardContent className="p-5 space-y-4">
+                <CardContent className="p-5 space-y-3">
                   <div className="flex items-center gap-3">
                     <Skeleton className="h-10 w-10 rounded-lg" />
                     <div className="space-y-2">

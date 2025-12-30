@@ -65,23 +65,37 @@ function formatCurrency(value: number): string {
 // ============================================================================
 // Skeleton State
 // ============================================================================
-export function SavingsChartSkeleton({ className }: { className?: string }) {
+export function SavingsChartSkeleton({
+  title = "Identified Savings",
+  subtitle = "Monthly tax savings across all clients",
+  className
+}: {
+  title?: string
+  subtitle?: string
+  className?: string
+}) {
   return (
     <Card className={cn("border-border/40", className)}>
-      <CardHeader className="pb-2">
+      <CardHeader>
         <div className="flex items-center justify-between">
           <div>
-            <Skeleton className="h-5 w-32 mb-1" />
-            <Skeleton className="h-3.5 w-48" />
+            <CardTitle className="text-base">{title}</CardTitle>
+            <CardDescription className="text-xs">{subtitle}</CardDescription>
           </div>
-          <Skeleton className="h-8 w-28" />
+          <Skeleton className="h-8 w-[120px]" />
         </div>
       </CardHeader>
       <CardContent className="pt-0">
         <Skeleton className="h-[200px] w-full" />
         <div className="mt-3 flex items-center justify-between pt-3 border-t border-border/30">
-          <Skeleton className="h-3 w-20" />
-          <Skeleton className="h-4 w-24" />
+          <div className="flex items-center gap-1.5">
+            <Skeleton className="h-2 w-2 rounded-full" />
+            <Skeleton className="h-3 w-20" />
+          </div>
+          <div className="flex items-center gap-2">
+            <Skeleton className="h-4 w-16" />
+            <Skeleton className="h-3 w-12" />
+          </div>
         </div>
       </CardContent>
     </Card>
@@ -100,7 +114,7 @@ export function SavingsChartEmpty({
 }) {
   return (
     <Card className={cn("border-border/40", className)}>
-      <CardHeader className="pb-2">
+      <CardHeader>
         <CardTitle className="text-base">{title}</CardTitle>
       </CardHeader>
       <CardContent>
@@ -192,7 +206,7 @@ export function SavingsChart({
 
   // Loading State
   if (state === 'loading') {
-    return <SavingsChartSkeleton className={className} />
+    return <SavingsChartSkeleton title={title} subtitle={subtitle} className={className} />
   }
 
   // Empty State
@@ -204,14 +218,14 @@ export function SavingsChart({
 
   return (
     <Card className={cn("border-border/40", className)}>
-      <CardHeader className="pb-2">
+      <CardHeader>
         <div className="flex items-center justify-between">
           <div>
             <CardTitle className="text-base">{title}</CardTitle>
             <CardDescription className="text-xs">{subtitle}</CardDescription>
           </div>
           <Select value={timeFilter} onValueChange={handleTimeFilterChange}>
-            <SelectTrigger className="h-8 w-[100px] text-xs bg-muted/50 border-border/50">
+            <SelectTrigger className="h-8 w-[120px] text-xs bg-muted/50 border-border/50">
               <SelectValue placeholder="Period" />
             </SelectTrigger>
             <SelectContent align="end">

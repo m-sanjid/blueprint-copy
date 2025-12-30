@@ -41,7 +41,7 @@ const categoryColors: Record<string, { bg: string; text: string; border: string 
 }
 
 const confidenceColors = {
-  high: 'bg-green-500',
+  high: 'bg-emerald-500',
   medium: 'bg-yellow-500',
   low: 'bg-red-500',
 }
@@ -53,21 +53,37 @@ function formatCurrency(value: number): string {
 }
 
 // Skeleton State
-export function StrategyHeatmapSkeleton({ className }: { className?: string }) {
+export function StrategyHeatmapSkeleton({
+  title = "Strategy Heatmap",
+  subtitle = "Tier-1 tax strategies by potential impact",
+  className
+}: {
+  title?: string
+  subtitle?: string
+  className?: string
+}) {
   return (
-    <Card className={cn("border-border/50", className)}>
-      <CardHeader>
-        <Skeleton className="h-6 w-40 mb-2" />
-        <Skeleton className="h-4 w-64" />
+    <Card className={cn("border-border/50 py-4 gap-3", className)}>
+      <CardHeader className='px-4'>
+        <CardTitle>{title}</CardTitle>
+        <CardDescription>{subtitle}</CardDescription>
       </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <CardContent className='px-4'>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
           {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="p-4 rounded-lg border border-border/50">
-              <Skeleton className="h-5 w-20 mb-3" />
-              <Skeleton className="h-4 w-28 mb-4" />
-              <Skeleton className="h-6 w-16 mb-1" />
-              <Skeleton className="h-3 w-24" />
+            <div key={i} className="p-2.5 rounded-lg border border-border/50">
+              <Skeleton className="h-5 w-20 mb-1.5" />
+              <Skeleton className="h-4 w-28 mb-1.5" />
+              <div className="flex items-center justify-between">
+                <div>
+                  <Skeleton className="h-5 w-16 mb-1" />
+                  <Skeleton className="h-3 w-20" />
+                </div>
+                <div className="text-right">
+                  <Skeleton className="h-4 w-8 mb-1" />
+                  <Skeleton className="h-3 w-12" />
+                </div>
+              </div>
             </div>
           ))}
         </div>
@@ -119,7 +135,7 @@ export function StrategyHeatmap({
 
   // Loading State
   if (state === 'loading') {
-    return <StrategyHeatmapSkeleton className={className} />
+    return <StrategyHeatmapSkeleton title={title} subtitle={subtitle} className={className} />
   }
 
   // Empty State
@@ -129,42 +145,24 @@ export function StrategyHeatmap({
 
   // Data State
   return (
-    <Card className={cn("border-border/50", className)}>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle>{title}</CardTitle>
-            <CardDescription>{subtitle}</CardDescription>
-          </div>
-          <div className="flex items-center gap-4 text-xs">
-            <div className="flex items-center gap-1.5">
-              <span className={cn("h-2 w-2 rounded-full", confidenceColors.high)} />
-              <span className="text-muted-foreground">High Confidence</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span className={cn("h-2 w-2 rounded-full", confidenceColors.medium)} />
-              <span className="text-muted-foreground">Medium</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span className={cn("h-2 w-2 rounded-full", confidenceColors.low)} />
-              <span className="text-muted-foreground">Low</span>
-            </div>
-          </div>
-        </div>
+    <Card className={cn("border-border/50 py-4 gap-3", className)}>
+      <CardHeader className='px-4'>
+        <CardTitle>{title}</CardTitle>
+        <CardDescription>{subtitle}</CardDescription>
       </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <CardContent className='px-4'>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
           {strategies.map((strategy) => {
             const colors = categoryColors[strategy.category] || { bg: 'bg-gray-500/20', text: 'text-gray-400', border: 'border-gray-500/30' }
             return (
               <div
                 key={strategy.id}
-                className="p-4 rounded-lg border border-border/50 bg-card hover:bg-accent/30 transition-colors cursor-pointer"
+                className="p-2.5 rounded-lg border border-border/50 bg-card hover:bg-accent/30 transition-colors cursor-pointer"
               >
-                <Badge variant="outline" className={cn("text-[10px] px-2 py-0.5 mb-3", colors.bg, colors.text, colors.border)}>
+                <Badge variant="outline" className={cn("text-[10px] px-2 py-0.5 mb-1.5", colors.bg, colors.text, colors.border)}>
                   {strategy.category}
                 </Badge>
-                <h4 className="font-medium text-sm mb-3">{strategy.title}</h4>
+                <h4 className="font-medium text-sm mb-1.5">{strategy.title}</h4>
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-lg font-bold">{formatCurrency(strategy.savings)}</p>

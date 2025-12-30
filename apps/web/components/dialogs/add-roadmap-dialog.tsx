@@ -70,7 +70,7 @@ export function AddRoadmapDialog({ open, onOpenChange, onSubmit, clients = defau
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-3">
           <div className="space-y-2">
             <Label htmlFor="roadmap-name">Roadmap Name</Label>
             <Input

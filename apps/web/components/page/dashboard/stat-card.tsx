@@ -31,10 +31,10 @@ export interface StatCardProps {
 // Skeleton State Component
 export function StatCardSkeleton({ className }: { className?: string }) {
   return (
-    <Card className={cn("border-border/40", className)}>
-      <CardContent className="px-4 py-2">
-        <Skeleton className="h-3.5 w-20 mb-2" />
-        <Skeleton className="h-7 w-24 mb-2" />
+    <Card className={cn("border-border/40 py-0", className)}>
+      <CardContent className="p-3">
+        <Skeleton className="h-3.5 w-20 mb-1" />
+        <Skeleton className="h-7 w-24 mb-1" />
         <Skeleton className="h-4 w-28" />
       </CardContent>
     </Card>
@@ -44,8 +44,8 @@ export function StatCardSkeleton({ className }: { className?: string }) {
 // Empty State Component
 export function StatCardEmpty({ title, className }: { title: string; className?: string }) {
   return (
-    <Card className={cn("border-border/40", className)}>
-      <CardContent className="px-4 py-2">
+    <Card className={cn("border-border/40 py-0", className)}>
+      <CardContent className="p-3">
         <p className="text-xs text-muted-foreground mb-1">{title}</p>
         <div className="text-xl font-semibold text-muted-foreground/50">--</div>
       </CardContent>
@@ -93,8 +93,8 @@ export function StatCard({
   const TrendIcon = isPositive ? IconTrendingUp : isNegative ? IconTrendingDown : IconMinus
 
   return (
-    <Card className={cn("border-border/40", className)}>
-      <CardContent className="px-4 py-2">
+    <Card className={cn("border-border/40 py-0", className)}>
+      <CardContent className="p-3">
         {/* Header with title */}
         <p className="text-xs text-muted-foreground mb-1">{cardTitle}</p>
 

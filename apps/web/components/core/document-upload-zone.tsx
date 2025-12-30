@@ -174,7 +174,7 @@ export function DocumentUploadZone({
   }, [])
 
   return (
-    <div className={cn("space-y-4", className)}>
+    <div className={cn("space-y-3", className)}>
       {/* Drop Zone */}
       <Card
         className={cn(

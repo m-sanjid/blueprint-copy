@@ -31,20 +31,28 @@ export interface AdvisorTasksProps {
 }
 
 // Skeleton State
-export function AdvisorTasksSkeleton({ className }: { className?: string }) {
+export function AdvisorTasksSkeleton({
+  title = "Advisor Tasks",
+  subtitle = "Pending reviews and actions",
+  className
+}: {
+  title?: string
+  subtitle?: string
+  className?: string
+}) {
   return (
     <Card className={cn("border-border/50", className)}>
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
-            <Skeleton className="h-6 w-32 mb-2" />
-            <Skeleton className="h-4 w-48" />
+            <CardTitle>{title}</CardTitle>
+            <CardDescription>{subtitle}</CardDescription>
           </div>
-          <Skeleton className="h-6 w-20" />
+          <Skeleton className="h-5 w-20 rounded-full" />
         </div>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
+        <div className="space-y-3">
           {Array.from({ length: 5 }).map((_, i) => (
             <div key={i} className="flex items-center gap-3">
               <Skeleton className="h-4 w-4 rounded-full" />
@@ -52,7 +60,7 @@ export function AdvisorTasksSkeleton({ className }: { className?: string }) {
                 <Skeleton className="h-4 w-48 mb-1" />
                 <Skeleton className="h-3 w-32" />
               </div>
-              <Skeleton className="h-4 w-16" />
+              <Skeleton className="h-3 w-16" />
             </div>
           ))}
         </div>
@@ -106,7 +114,7 @@ export function AdvisorTasks({
 
   // Loading State
   if (state === 'loading') {
-    return <AdvisorTasksSkeleton className={className} />
+    return <AdvisorTasksSkeleton title={title} subtitle={subtitle} className={className} />
   }
 
   // Empty State
@@ -134,7 +142,7 @@ export function AdvisorTasks({
         </div>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
+        <div className="space-y-3">
           {tasks.map((task) => (
             <div key={task.id} className="flex items-center gap-3 group cursor-pointer">
               <div className={cn(
