@@ -5,6 +5,8 @@ import {
   Sidebar,
   SidebarContent,
   SidebarRail,
+  SidebarTrigger,
+  useSidebar,
 } from "@workspace/ui/components/sidebar"
 
 import {
@@ -15,6 +17,7 @@ import {
 } from "./sidebar"
 import { IconBrain, IconCalculator, IconFileText, IconHeartbeat, IconHeartRateMonitor, IconLayoutDashboard, IconLock, IconMap, IconSettings, IconUsers } from "@tabler/icons-react"
 import { CompanyLogo } from "./logo"
+import { cn } from "@workspace/ui/lib/utils"
 
 // Main navigation items matching the reference design
 const navItems: NavItem[] = [
@@ -71,8 +74,10 @@ const navItems: NavItem[] = [
 
 
 const AppSidebar = () => {
+  const { open } = useSidebar()
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar collapsible="icon" className="relative">
+      <SidebarTrigger className={cn("absolute top-4 right-8 z-50", !open && "hidden")} />
       <SidebarHeader
         company={{
           name: "Blueprint",

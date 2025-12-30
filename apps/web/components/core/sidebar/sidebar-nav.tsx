@@ -45,7 +45,7 @@ export function SidebarNav({ items }: SidebarNavProps) {
                 {isActive && (
                   <motion.span
                     layoutId="sidebar-active"
-                    className="absolute inset-0 bg-sidebar-accent rounded-md z-0"
+                    className="absolute inset-0 bg-black/5 dark:bg-white/5 rounded-md z-0"
                     transition={{ type: "spring", bounce: 0.2, duration: 0.4 }}
                   />
                 )}

@@ -9,10 +9,9 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
-        <Header />
-        <Container className='py-8'>
+        <div className='h-screen overflow-y-auto relative'>
           {children}
-        </Container>
+        </div>
       </SidebarInset>
     </SidebarProvider>
   )
