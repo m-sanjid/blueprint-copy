@@ -169,7 +169,7 @@ export default function Clients() {
         </div>
 
         {/* Search and Filters */}
-        <div className="flex items-center gap-4 flex-wrap">
+        <div className="flex items-center gap-4 flex-wrap pb-2">
           <div className="relative flex-1 min-w-[200px] max-w-md">
             <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
@@ -213,101 +213,206 @@ export default function Clients() {
 
         {/* Client Cards */}
         {isLoading ? (
-          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 6 }).map((_, i) => (
-              <Card key={i} className="border-border/30 bg-card/50">
-                <CardContent className="p-5 space-y-3">
-                  <div className="flex items-center gap-3">
-                    <Skeleton className="h-10 w-10 rounded-lg" />
-                    <div className="space-y-2">
-                      <Skeleton className="h-4 w-32" />
-                      <Skeleton className="h-3 w-20" />
+              <Card
+                key={i}
+                className={cn(
+                  "group relative overflow-hidden rounded-lg pt-4 pb-2",
+                  "border border-border/40 bg-card/60 backdrop-blur"
+                )}
+              >
+                <CardContent className="px-3 space-y-2">
+                  {/* Header Skeleton */}
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-3">
+                      <div>
+                        <Skeleton className="h-4 w-32" />
+                        <Skeleton className="mt-1 h-3 w-16" />
+                      </div>
+                    </div>
+                    <Skeleton className="h-5 w-14 rounded-full" />
+                  </div>
+
+                  {/* Metrics Skeleton */}
+                  <div className="grid grid-cols-3 gap-1">
+                    {[1, 2, 3].map((j) => (
+                      <div
+                        key={j}
+                        className="rounded-md flex flex-col items-center justify-center bg-muted/40 px-1 py-1 text-center"
+                      >
+                        <Skeleton className="h-4 w-10 mb-1" />
+                        <Skeleton className="h-2.5 w-12" />
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Footer Skeleton */}
+                  <div className="flex items-center justify-between border-t border-border/30 pt-1">
+                    <Skeleton className="h-3 w-16" />
+                    <div className="flex items-center gap-1">
+                      <Skeleton className="h-4 w-4 rounded" />
                     </div>
                   </div>
-                  <div className="grid grid-cols-3 gap-2">
-                    <Skeleton className="h-14 rounded-lg" />
-                    <Skeleton className="h-14 rounded-lg" />
-                    <Skeleton className="h-14 rounded-lg" />
-                  </div>
-                  <Skeleton className="h-8 w-full" />
                 </CardContent>
               </Card>
             ))}
           </div>
         ) : filteredClients.length === 0 ? (
-          <Empty className="min-h-[300px]">
-            <EmptyMedia variant="icon">
-              <IconUsers className="h-8 w-8" />
-            </EmptyMedia>
-            <EmptyHeader>
-              <EmptyTitle>No Clients Found</EmptyTitle>
-              <EmptyDescription>Try adjusting your filters or add a new client.</EmptyDescription>
-            </EmptyHeader>
-          </Empty>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <Card
+                key={i}
+                className={cn(
+                  "group relative overflow-hidden rounded-lg pt-4 pb-2",
+                  "border border-border/40 bg-card/60 backdrop-blur"
+                )}
+              >
+                <CardContent className="px-3 space-y-2">
+                  {/* Header Empty */}
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-3">
+                      <div>
+                        <div className="h-5 w-32 rounded bg-muted/20" />
+                        <div className="mt-1 h-5 w-16 rounded bg-muted/20" />
+                      </div>
+                    </div>
+                    <div className="h-5 w-14 rounded-full bg-muted/20" />
+                  </div>
+
+                  {/* Metrics Empty */}
+                  <div className="grid grid-cols-3 gap-1">
+                    {[1, 2, 3].map((j) => (
+                      <div
+                        key={j}
+                        className="rounded-md flex flex-col items-center justify-center bg-muted/20 px-1 py-1 text-center h-10"
+                      />
+                    ))}
+                  </div>
+
+                  {/* Footer Empty */}
+                  <div className="flex items-center justify-between border-t border-border/30 pt-1">
+                    <div className="h-3 w-16 rounded bg-muted/20" />
+                    <div className="flex items-center gap-1">
+                      <div className="h-4 w-4 rounded bg-muted/20" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+            {/* Empty message overlay */}
+            <div className="absolute inset-0 flex items-center justify-center col-span-full">
+              <Empty className="bg-background/80 backdrop-blur-sm rounded-lg p-8">
+                <EmptyMedia variant="icon">
+                  <IconUsers className="h-8 w-8" />
+                </EmptyMedia>
+                <EmptyHeader>
+                  <EmptyTitle>No Clients Found</EmptyTitle>
+                  <EmptyDescription>Try adjusting your filters or add a new client.</EmptyDescription>
+                </EmptyHeader>
+              </Empty>
+            </div>
+          </div>
         ) : (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {filteredClients.map((client) => (
               <Card
                 key={client.id}
-                className="border-border/30 bg-card/50 hover:border-border/60 hover:shadow-lg hover:shadow-black/5 transition-all duration-200 cursor-pointer group"
                 onClick={() => handleClientClick(client.id)}
+                className={cn(
+                  "group relative cursor-pointer overflow-hidden rounded-lg pt-4 pb-2",
+                  "border border-border/40 bg-card/60 backdrop-blur",
+                  "transition-all duration-200",
+                  "hover:-translate-y-0.5 hover:border-border/70 hover:shadow-lg hover:shadow-black/5"
+                )}
               >
-                <CardContent className="p-5">
-                  {/* Header */}
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex items-center gap-2.5">
-                      <div className={cn(
-                        "p-2 rounded-lg",
-                        client.entityType === 'S-Corp' ? "bg-green-500/10" :
-                          client.entityType === 'Individual' ? "bg-sky-500/10" :
-                            client.entityType === 'Partnership' ? "bg-purple-500/10" :
-                              client.entityType === 'C-Corp' ? "bg-yellow-500/10" : "bg-orange-500/10"
-                      )}>
-                        {entityIcons[client.entityType]}
-                      </div>
+                <CardContent className="px-3 space-y-2">
+                  {/* ================= Header ================= */}
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-3">
+
+                      {/* Name + Meta */}
                       <div>
-                        <h3 className="font-semibold text-sm flex items-center gap-1.5">
+                        <h3 className="flex items-center gap-1.5 text-sm font-semibold leading-none">
                           {client.name}
-                          {client.isVip && <IconStar className="h-3.5 w-3.5 text-yellow-400 fill-yellow-400" />}
+                          {client.isVip && (
+                            <IconStar className="h-3.5 w-3.5 text-yellow-400 fill-yellow-400" />
+                          )}
                         </h3>
-                        <p className="text-xs text-muted-foreground">{client.entityType}</p>
+                        <p className="mt-0.5 text-xs text-muted-foreground">
+                          {client.entityType}
+                        </p>
                       </div>
                     </div>
-                    <Badge variant="outline" className={cn("text-xs", statusConfig[client.status].className)}>
+
+                    {/* Status */}
+                    <Badge
+                      variant="outline"
+                      className={cn(
+                        "text-[11px] font-medium",
+                        statusConfig[client.status].className
+                      )}
+                    >
                       {client.status}
                     </Badge>
                   </div>
 
-                  {/* Metrics */}
-                  <div className="grid grid-cols-3 gap-2 mb-3">
-                    <div className="p-2 rounded-lg bg-background/50 border border-border/20 text-center">
-                      <p className="text-sm font-semibold text-emerald-400">{formatCurrency(client.savings)}</p>
-                      <p className="text-[10px] text-muted-foreground">Savings</p>
+                  {/* ================= Metrics ================= */}
+                  <div className="grid grid-cols-3 gap-1">
+                    {/* Savings */}
+                    <div className="rounded-md flex flex-col items-center justify-center bg-muted/40 px-1 py-1 text-center">
+                      <p className="text-sm font-semibold text-emerald-500">
+                        {formatCurrency(client.savings)}
+                      </p>
+                      <p className="text-[10px] uppercase tracking-wide text-muted-foreground">
+                        Savings
+                      </p>
                     </div>
-                    <div className="p-2 rounded-lg bg-background/50 border border-border/20 text-center">
+
+                    {/* Strategies */}
+                    <div className="rounded-md flex flex-col items-center justify-center bg-muted/40 px-1 py-1 text-center">
                       <p className="text-sm font-semibold">{client.strategies}</p>
-                      <p className="text-[10px] text-muted-foreground">Strategies</p>
+                      <p className="text-[10px] uppercase tracking-wide text-muted-foreground">
+                        Strategies
+                      </p>
                     </div>
-                    <div className="p-2 rounded-lg bg-background/50 border border-border/20 text-center">
+
+                    {/* Documents */}
+                    <div className="rounded-md flex flex-col items-center justify-center bg-muted/40 px-1 py-1 text-center">
                       <p className="text-sm font-semibold">{client.documents}</p>
-                      <p className="text-[10px] text-muted-foreground">Docs</p>
+                      <p className="text-[10px] uppercase tracking-wide text-muted-foreground">
+                        Docs
+                      </p>
                     </div>
                   </div>
 
-                  {/* Footer */}
-                  <div className="flex items-center justify-between pt-2 border-t border-border/20">
-                    <span className="text-xs text-muted-foreground">{client.lastActivity}</span>
-                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={(e) => { e.stopPropagation(); toast.info(`Actions for ${client.name}`); }}>
+                  {/* ================= Footer ================= */}
+                  <div className="flex items-center justify-between border-t border-border/30 pt-1">
+                    <span className="text-xs text-muted-foreground">
+                      {client.lastActivity}
+                    </span>
+
+                    <div className="flex items-center gap-1">
+                      {/* Actions */}
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 w-7 p-0 opacity-0 transition-all group-hover:opacity-100"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toast.info(`Actions for ${client.name}`);
+                        }}
+                      >
                         <IconDots className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="sm" className="h-7 w-7 p-0">
-                        <IconChevronRight className="h-4 w-4" />
-                      </Button>
+
+                      {/* Navigate */}
+                      <IconChevronRight className="h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
                     </div>
                   </div>
                 </CardContent>
               </Card>
+
             ))}
           </div>
         )}
