@@ -188,7 +188,7 @@ export function DocumentUploadZone({
         onDrop={handleDrop}
         onClick={() => inputRef.current?.click()}
       >
-        <CardContent className="py-12 flex flex-col items-center justify-center text-center">
+        <CardContent className="flex flex-col items-center justify-center text-center">
           <div
             className={cn(
               "p-3 rounded-full mb-4 transition-colors",
