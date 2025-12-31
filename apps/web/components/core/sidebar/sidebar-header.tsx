@@ -29,10 +29,10 @@ export function SidebarHeader({ company, companies = [], onCompanyChange }: Side
   return (
     <SidebarHeaderBase className="relative">
       <SidebarMenu>
-        <SidebarMenuItem className="flex items-center justify-between">
+        <SidebarMenuItem className="flex items-center justify-between gap-2">
           <SidebarMenuButton
             size="lg"
-            className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground justify-between"
+            className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground flex-1"
           >
             <div className="flex items-center gap-2">
               <Button size="icon-sm" asChild className="size-8">
@@ -42,8 +42,8 @@ export function SidebarHeader({ company, companies = [], onCompanyChange }: Side
                 <span className="font-semibold">{company.name}</span>
               </div>
             </div>
-            <SidebarTrigger className={cn("", !open && "hidden")} />
           </SidebarMenuButton>
+          <SidebarTrigger className={cn("shrink-0", !open && "hidden")} />
         </SidebarMenuItem>
       </SidebarMenu>
     </SidebarHeaderBase>
