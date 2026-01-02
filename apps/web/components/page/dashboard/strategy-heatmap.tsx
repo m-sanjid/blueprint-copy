@@ -24,6 +24,7 @@ export interface StrategyHeatmapProps {
   state?: DataState
   title?: string
   subtitle?: string
+  onStrategyClick?: (strategy: StrategyItem) => void
   className?: string
   // Legacy prop
   strategies?: StrategyItem[]
@@ -128,6 +129,7 @@ export function StrategyHeatmap({
   state = 'data',
   title = "Strategy Heatmap",
   subtitle = "Tier-1 tax strategies by potential impact",
+  onStrategyClick,
   className,
   strategies: legacyStrategies
 }: StrategyHeatmapProps) {
@@ -158,6 +160,7 @@ export function StrategyHeatmap({
               <div
                 key={strategy.id}
                 className="p-2.5 rounded-lg border border-border/50 bg-card hover:bg-accent/30 transition-colors cursor-pointer"
+                onClick={() => onStrategyClick?.(strategy)}
               >
                 <Badge variant="outline" className={cn("text-[10px] px-2 py-0.5 mb-1.5", colors.bg, colors.text, colors.border)}>
                   {strategy.category}
@@ -178,6 +181,6 @@ export function StrategyHeatmap({
           })}
         </div>
       </CardContent>
-    </Card>
+    </Card >
   )
 }

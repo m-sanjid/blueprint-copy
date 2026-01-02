@@ -25,6 +25,7 @@ export interface DocumentPipelineProps {
   title?: string
   subtitle?: string
   onViewAll?: () => void
+  onDocumentClick?: (doc: PipelineDocument) => void
   className?: string
   // Legacy prop
   documents?: PipelineDocument[]
@@ -119,6 +120,7 @@ export function DocumentPipeline({
   title = "Document Pipeline",
   subtitle = "Real-time OCR & extraction status",
   onViewAll,
+  onDocumentClick,
   className,
   documents: legacyDocuments
 }: DocumentPipelineProps) {
@@ -157,7 +159,14 @@ export function DocumentPipeline({
             const config = statusConfig[doc.status]
             const StatusIcon = config.icon
             return (
-              <div key={doc.id} className="flex items-center gap-3 p-3 rounded-lg border border-border/50 bg-card hover:bg-accent/30 transition-colors">
+              <div
+                key={doc.id}
+                className={cn(
+                  "flex items-center gap-3 p-3 rounded-lg border border-border/50 bg-card hover:bg-accent/30 transition-colors",
+                  onDocumentClick && "cursor-pointer"
+                )}
+                onClick={() => onDocumentClick?.(doc)}
+              >
                 <div className="p-2 rounded-lg bg-muted">
                   <FileText className="h-4 w-4 text-muted-foreground" />
                 </div>
@@ -165,12 +174,14 @@ export function DocumentPipeline({
                   <p className="text-sm font-medium truncate">{doc.name}</p>
                   <p className="text-xs text-muted-foreground">{doc.type}</p>
                 </div>
-                {doc.confidence !== undefined && (
-                  <div className="text-right flex-shrink-0">
-                    <p className="text-sm font-medium">{doc.confidence}%</p>
-                    <p className="text-xs text-muted-foreground">confidence</p>
-                  </div>
-                )}
+                {
+                  doc.confidence !== undefined && (
+                    <div className="text-right flex-shrink-0">
+                      <p className="text-sm font-medium">{doc.confidence}%</p>
+                      <p className="text-xs text-muted-foreground">confidence</p>
+                    </div>
+                  )
+                }
                 <Badge variant="outline" className={cn("flex-shrink-0", config.className)}>
                   <StatusIcon className={cn("h-3 w-3 mr-1", doc.status === 'processing' && "animate-spin")} />
                   {config.label}
@@ -189,6 +200,6 @@ export function DocumentPipeline({
           </button>
         )}
       </CardContent>
-    </Card>
+    </Card >
   )
 }

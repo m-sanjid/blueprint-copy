@@ -30,6 +30,7 @@ export interface ActiveClientsProps {
   filterValue?: string
   onFilterChange?: (value: string) => void
   onViewAll?: () => void
+  onClientClick?: (client: Client) => void
   className?: string
   // Legacy prop
   clients?: Client[]
@@ -120,6 +121,7 @@ export function ActiveClients({
   filterValue = "all",
   onFilterChange,
   onViewAll,
+  onClientClick,
   className,
   clients: legacyClients
 }: ActiveClientsProps) {
@@ -149,7 +151,11 @@ export function ActiveClients({
           {clients.map((client) => {
             const config = statusConfig[client.status]
             return (
-              <div key={client.id} className="flex items-center gap-3 p-3 rounded-lg border border-border/50 bg-card hover:bg-accent/30 transition-colors cursor-pointer group">
+              <div
+                key={client.id}
+                className="flex items-center gap-3 p-3 rounded-lg border border-border/50 bg-card hover:bg-accent/30 transition-colors cursor-pointer group"
+                onClick={() => onClientClick?.(client)}
+              >
                 <Avatar className="h-10 w-10">
                   <AvatarImage src={client.avatar} alt={client.name} />
                   <AvatarFallback className="bg-muted text-muted-foreground text-sm">{getInitials(client.name)}</AvatarFallback>

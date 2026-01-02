@@ -25,6 +25,7 @@ export interface AdvisorTasksProps {
   title?: string
   subtitle?: string
   onViewAll?: () => void
+  onTaskToggle?: (taskId: string, completed: boolean) => void
   className?: string
   // Legacy prop
   tasks?: Task[]
@@ -107,6 +108,7 @@ export function AdvisorTasks({
   title = "Advisor Tasks",
   subtitle = "Pending reviews and actions",
   onViewAll,
+  onTaskToggle,
   className,
   tasks: legacyTasks
 }: AdvisorTasksProps) {
@@ -145,10 +147,13 @@ export function AdvisorTasks({
         <div className="space-y-3">
           {tasks.map((task) => (
             <div key={task.id} className="flex items-center gap-3 group cursor-pointer">
-              <div className={cn(
-                "h-4 w-4 rounded-full border-2 flex-shrink-0",
-                task.completed ? "bg-green-500 border-green-500" : "border-muted-foreground/40"
-              )} />
+              <div
+                className={cn(
+                  "h-4 w-4 rounded-full border-2 shrink-0",
+                  task.completed ? "bg-green-500 border-green-500" : "border-muted-foreground/40"
+                )}
+                onClick={() => onTaskToggle?.(task.id, !task.completed)}
+              />
               <div className="flex-1 min-w-0">
                 <p className={cn(
                   "text-sm font-medium truncate",
