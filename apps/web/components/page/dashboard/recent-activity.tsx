@@ -21,6 +21,7 @@ export interface RecentActivityProps {
   state?: DataState
   title?: string
   subtitle?: string
+  onActivityClick?: (activity: ActivityItem) => void
   className?: string
   // Legacy prop
   activities?: ActivityItem[]
@@ -91,6 +92,7 @@ export function RecentActivity({
   state = 'data',
   title = "Recent Activity",
   subtitle = "Platform events and notifications",
+  onActivityClick,
   className,
   activities: legacyActivities
 }: RecentActivityProps) {
@@ -111,8 +113,15 @@ export function RecentActivity({
             const config = activityIcons[activity.type]
             const IconComponent = config.icon
             return (
-              <div key={activity.id} className="flex items-start gap-3">
-                <div className={cn("p-2 rounded-lg flex-shrink-0", config.className)}>
+              <div
+                key={activity.id}
+                className={cn(
+                  "flex items-start gap-3",
+                  onActivityClick && "cursor-pointer hover:bg-accent/30 rounded-lg p-2 -mx-2 transition-colors"
+                )}
+                onClick={() => onActivityClick?.(activity)}
+              >
+                <div className={cn("p-2 rounded-lg shrink-0", config.className)}>
                   <IconComponent className="h-4 w-4" />
                 </div>
                 <div className="flex-1 min-w-0">

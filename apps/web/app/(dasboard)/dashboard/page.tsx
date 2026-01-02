@@ -1,8 +1,8 @@
 "use client"
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { Users, DollarSign, FileText, Brain } from 'lucide-react'
+import { Users, DollarSign, FileText, Brain, RefreshCw } from 'lucide-react'
 import {
   PageHeader,
   StatCard,
@@ -22,7 +22,8 @@ import {
 } from '@/components/page/dashboard'
 import { Container } from '@/components/core/container'
 import { IconPlus } from '@tabler/icons-react'
-import { useAddClientDialog } from '@/components/dialogs'
+import { AddClientDialog, useAddClientDialog, type ClientFormData } from '@/components/dialogs'
+import { toast } from 'sonner'
 
 // ============================================================================
 // API Types - Ready for backend integration
@@ -43,37 +44,55 @@ interface DashboardData {
 }
 
 // ============================================================================
-// Custom Hook for Data Fetching - Replace with your API calls
+// API Functions - Replace with actual API calls
+// ============================================================================
+async function fetchDashboardData(): Promise<DashboardData> {
+  // TODO: Replace with actual API call
+  // return await fetch('/api/dashboard').then(res => res.json())
+  await new Promise(resolve => setTimeout(resolve, 1500))
+  return generateMockData()
+}
+
+async function updateTaskStatus(taskId: string, completed: boolean): Promise<{ success: boolean }> {
+  // TODO: Replace with actual API call
+  // return await fetch(`/api/tasks/${taskId}`, { method: 'PATCH', body: JSON.stringify({ completed }) }).then(res => res.json())
+  await new Promise(resolve => setTimeout(resolve, 300))
+  console.log('Updating task:', taskId, completed)
+  return { success: true }
+}
+
+async function createClient(data: ClientFormData): Promise<{ success: boolean }> {
+  // TODO: Replace with actual API call
+  await new Promise(resolve => setTimeout(resolve, 800))
+  console.log('Creating client from dashboard:', data)
+  return { success: true }
+}
+
+// ============================================================================
+// Custom Hook for Data Fetching
 // ============================================================================
 function useDashboardData() {
   const [state, setState] = useState<DataState>('loading')
   const [data, setData] = useState<DashboardData | null>(null)
   const [error, setError] = useState<Error | null>(null)
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setState('loading')
-      try {
-        // Simulate API call - Replace with actual fetch
-        await new Promise(resolve => setTimeout(resolve, 1500))
-
-        // TODO: Replace with actual API call
-        // const response = await fetch('/api/dashboard')
-        // const data = await response.json()
-
-        const mockData = generateMockData()
-        setData(mockData)
-        setState(mockData ? 'data' : 'empty')
-      } catch (err) {
-        setError(err as Error)
-        setState('empty')
-      }
+  const refetch = useCallback(async () => {
+    setState('loading')
+    try {
+      const result = await fetchDashboardData()
+      setData(result)
+      setState('data')
+    } catch (err) {
+      setError(err as Error)
+      setState('empty')
     }
-
-    fetchData()
   }, [])
 
-  return { state, data, error, refetch: () => { } }
+  useEffect(() => {
+    refetch()
+  }, [refetch])
+
+  return { state, data, setData, error, refetch }
 }
 
 // ============================================================================
@@ -144,58 +163,187 @@ function generateMockData(): DashboardData {
 // ============================================================================
 export default function Dashboard() {
   const router = useRouter()
-  const { state, data } = useDashboardData()
+  const { state, data, setData, refetch } = useDashboardData()
+  const [isRefreshing, setIsRefreshing] = useState(false)
+  const addClientDialog = useAddClientDialog()
+
+  // ============================================================================
+  // Handlers
+  // ============================================================================
+  const handleRefresh = async () => {
+    setIsRefreshing(true)
+    await refetch()
+    setIsRefreshing(false)
+    toast.success('Dashboard refreshed')
+  }
 
   const handleViewClients = () => router.push('/clients')
   const handleViewDocuments = () => router.push('/documents')
-  const handleViewTasks = () => alert('Tasks page coming soon!')
   const handleViewRoadmaps = () => router.push('/roadmaps')
-  const addClientDialog = useAddClientDialog()
 
+  const handleViewTasks = () => {
+    toast.info('Tasks page coming soon!', {
+      description: 'You can manage tasks from the dashboard for now.'
+    })
+  }
+
+  const handleStatClick = (stat: string) => {
+    switch (stat) {
+      case 'clients':
+        router.push('/clients')
+        break
+      case 'savings':
+        router.push('/reports')
+        break
+      case 'documents':
+        router.push('/documents')
+        break
+      case 'strategies':
+        router.push('/strategy-engine')
+        break
+    }
+  }
+
+  const handleStrategyClick = (strategy: StrategyItem) => {
+    toast.info(`Strategy: ${strategy.title}`, {
+      description: `${strategy.clients} clients using this strategy with $${(strategy.savings / 1000).toFixed(0)}K savings`
+    })
+    router.push('/strategy-engine')
+  }
+
+  const handleTaskToggle = async (taskId: string, completed: boolean) => {
+    // Optimistic update
+    setData(prev => prev ? {
+      ...prev,
+      tasks: prev.tasks.map(t => t.id === taskId ? { ...t, completed } : t)
+    } : null)
+
+    try {
+      await updateTaskStatus(taskId, completed)
+      toast.success(completed ? 'Task completed' : 'Task reopened')
+    } catch (error) {
+      // Revert on error
+      setData(prev => prev ? {
+        ...prev,
+        tasks: prev.tasks.map(t => t.id === taskId ? { ...t, completed: !completed } : t)
+      } : null)
+      toast.error('Failed to update task')
+    }
+  }
+
+  const handleDocumentClick = (doc: PipelineDocument) => {
+    if (doc.status === 'needs-review') {
+      toast.warning(`Review needed: ${doc.name}`, {
+        description: `Confidence: ${doc.confidence}%`,
+        action: { label: 'Review', onClick: () => router.push('/documents') }
+      })
+    } else if (doc.status === 'error') {
+      toast.error(`Processing failed: ${doc.name}`, {
+        action: { label: 'Retry', onClick: () => router.push('/documents') }
+      })
+    } else {
+      router.push('/documents')
+    }
+  }
+
+  const handleClientClick = (client: Client) => {
+    toast.info(`${client.name}`, {
+      description: `${client.entityType} • ${client.strategiesCount} strategies • $${(client.estimatedSavings / 1000).toFixed(0)}K savings`
+    })
+    router.push('/clients')
+  }
+
+  const handleActivityClick = (activity: ActivityItem) => {
+    switch (activity.type) {
+      case 'document':
+        router.push('/documents')
+        break
+      case 'strategy':
+        router.push('/strategy-engine')
+        break
+      case 'client':
+        router.push('/clients')
+        break
+    }
+  }
+
+  const handleAddClient = async (formData: ClientFormData) => {
+    try {
+      await createClient(formData)
+      toast.success('Client created!', {
+        description: `${formData.name} has been added.`
+      })
+      refetch()
+    } catch (error) {
+      toast.error('Failed to create client')
+    }
+  }
 
   return (
     <>
+      <AddClientDialog
+        open={addClientDialog.open}
+        onOpenChange={addClientDialog.setOpen}
+        onSubmit={handleAddClient}
+      />
+
       <PageHeader
         title="Dashboard"
         subtitle="Blueprint Core Platform Overview"
-        primaryAction={{ label: 'New Client', onClick: addClientDialog.openDialog, icon: <IconPlus className="h-4 w-4 mr-2" /> }}
+        primaryAction={{
+          label: isRefreshing ? 'Refreshing...' : 'Refresh',
+          onClick: handleRefresh,
+          icon: <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
+        }}
       />
       <Container className='py-8 space-y-3'>
 
-        {/* Stat Cards */}
+        {/* Stat Cards - Now clickable */}
         <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
-          <StatCard
-            state={state}
-            title="Active Clients"
-            value={data?.stats.activeClients.value}
-            change={data?.stats.activeClients.change}
-            changeLabel="vs last month"
-          />
-          <StatCard
-            state={state}
-            title="Total Savings"
-            value={data?.stats.totalSavings.value}
-            change={data?.stats.totalSavings.change}
-            changeLabel="vs last month"
-          />
-          <StatCard
-            state={state}
-            title="Documents Processed"
-            value={data?.stats.documentsProcessed.value}
-            change={data?.stats.documentsProcessed.change}
-            changeLabel="this week"
-          />
-          <StatCard
-            state={state}
-            title="Active Strategies"
-            value={data?.stats.strategiesActive.value}
-            change={data?.stats.strategiesActive.change}
-            changeLabel="new this month"
-          />
+          <div onClick={() => handleStatClick('clients')} className="cursor-pointer">
+            <StatCard
+              state={state}
+              title="Active Clients"
+              value={data?.stats.activeClients.value}
+              change={data?.stats.activeClients.change}
+              changeLabel="vs last month"
+            />
+          </div>
+          <div onClick={() => handleStatClick('savings')} className="cursor-pointer">
+            <StatCard
+              state={state}
+              title="Total Savings"
+              value={data?.stats.totalSavings.value}
+              change={data?.stats.totalSavings.change}
+              changeLabel="vs last month"
+            />
+          </div>
+          <div onClick={() => handleStatClick('documents')} className="cursor-pointer">
+            <StatCard
+              state={state}
+              title="Documents Processed"
+              value={data?.stats.documentsProcessed.value}
+              change={data?.stats.documentsProcessed.change}
+              changeLabel="this week"
+            />
+          </div>
+          <div onClick={() => handleStatClick('strategies')} className="cursor-pointer">
+            <StatCard
+              state={state}
+              title="Active Strategies"
+              value={data?.stats.strategiesActive.value}
+              change={data?.stats.strategiesActive.change}
+              changeLabel="new this month"
+            />
+          </div>
         </div>
 
         {/* Strategy Heatmap */}
-        <StrategyHeatmap state={state} data={data?.strategies} />
+        <StrategyHeatmap
+          state={state}
+          data={data?.strategies}
+          onStrategyClick={handleStrategyClick}
+        />
 
         {/* Charts and Tasks Row */}
         <div className="grid gap-5 lg:grid-cols-3">
@@ -209,6 +357,7 @@ export default function Dashboard() {
             state={state}
             data={data?.tasks}
             onViewAll={handleViewTasks}
+            onTaskToggle={handleTaskToggle}
           />
         </div>
 
@@ -219,8 +368,13 @@ export default function Dashboard() {
             data={data?.documents}
             className="lg:col-span-2"
             onViewAll={handleViewDocuments}
+            onDocumentClick={handleDocumentClick}
           />
-          <RecentActivity state={state} data={data?.activities} />
+          <RecentActivity
+            state={state}
+            data={data?.activities}
+            onActivityClick={handleActivityClick}
+          />
         </div>
 
         {/* Active Clients */}
@@ -228,6 +382,7 @@ export default function Dashboard() {
           state={state}
           data={data?.clients}
           onViewAll={handleViewClients}
+          onClientClick={handleClientClick}
         />
       </Container>
     </>
